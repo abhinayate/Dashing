@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admission Dashboard 2026-27</title>
+
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- DataTables -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css"
+  />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- XLSX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- DataTables -->
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/dataTables.bootstrap5.min.js"></script>
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #f4f7fc;
+    }
+
+    /* HEADER */
+
+    .dashboard-header {
+      background: linear-gradient(90deg, #0a1f6f, #1f5fd7);
+      padding: 28px 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
+
+    .logo-box {
+      width: 240px;
+      height: 120px;
+      background: white;
+      border-radius: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 20px;
+      color: #333;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+    }
+.logo-box img{
+width: 100%
+}
+
+    .dashboard-title {
+      color: white;
+      font-size: 37px;
+      font-weight: 800;
+      text-align: center;
+      flex-grow: 1;
+    }
+
+    /* FILTERS */
+
+    .filter-section {
+      padding: 25px;
+    }
+
+    .filter-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .filter-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #0a1f6f;
+    }
+
+    /* KPI */
+
+    .kpi-card {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      height: 100%;
+      transition: 0.3s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .kpi-title {
+      font-size: 17px;
+      color: #666;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .kpi-value {
+      font-size: 42px;
+      font-weight: bold;
+      color: #0a1f6f;
+    }
+
+    /* CHARTS */
+
+    .chart-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+      height: 100%;
+    }
+
+    .chart-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0a1f6f;
+      margin-bottom: 18px;
+    }
+
+    /* TABLE */
+
+    .table-card {
+      background: white;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
+    }
+
+    .upload-box {
+      border: 2px dashed #1f5fd7;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      background: #f9fbff;
+    }
+
+    .upload-box input {
+      margin-top: 12px;
+    }
+
+    canvas {
+      max-height: 380px;
+    }
+.header-center{
+display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    @media(max-width: 1200px){
+      .dashboard-title{
+        font-size: 42px;
+      }
+    }
+
+    @media(max-width: 768px){
+
+      .dashboard-header{
+        justify-content: center;
+      }
+
+      .dashboard-title{
+        font-size: 30px;
+      }
+
+      .logo-box{
+        width: 180px;
+        height: 90px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+
+  <div class="dashboard-header">
+
+    <div class="logo-box">
+        <img src="vedanta_logo.png" alt="School Logo" class="logo-img">
+    </div>
+        <h1 class="dashboard-title">
+            ADMISSION DASHBOARD 2026-27
+        </h1>
+    <div class="header-center">
+
+
+        <div class="logo-box">
+        <img src="kiwi_logo.png" alt="Kiwi Logo" class="logo-img">
+    </div>
+
+</div>
+
+  <!-- FILTER + UPLOAD -->
+
+  <div class="container-fluid filter-section">
+
+    <div class="filter-card">
+
+      <div class="row align-items-end g-4">
+
+        <div class="col-lg-3">
+          <label class="form-label fw-bold">Admission Status</label>
+          <select class="form-select" id="statusFilter">
+            <option value="All">All</option>
+          </select>
+        </div>
+
+        <div class="col-lg-3">
+          <label class="form-label fw-bold">Gender</label>
+          <select class="form-select" id="genderFilter">
+            <option value="All">All</option>
+          </select>
+        </div>
+
+        <div class="col-lg-3">
+          <label class="form-label fw-bold">Class</label>
+          <select class="form-select" id="classFilter">
+            <option value="All">All</option>
+          </select>
+        </div>
+
+        <div class="col-lg-3">
+          <div class="upload-box">
+            <div class="fw-bold mb-2">Upload Excel File</div>
+            <input type="file" id="excelFile" accept=".xlsx,.xls" class="form-control" />
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- KPI -->
+
+  <div class="container-fluid px-4">
+
+    <div class="row g-4 mb-4">
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">Total Admissions</div>
+          <div class="kpi-value" id="totalAdmissions">0</div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">ADMITTED</div>
+          <div class="kpi-value" id="admittedCount">0</div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">Provisionally Selected</div>
+          <div class="kpi-value" id="provisionalCount">0</div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">Not Eligible</div>
+          <div class="kpi-value" id="notEligibleCount">0</div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">Male Students</div>
+          <div class="kpi-value" id="maleCount">0</div>
+        </div>
+      </div>
+
+      <div class="col-lg-2 col-md-4 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-title">Female Students</div>
+          <div class="kpi-value" id="femaleCount">0</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CHARTS -->
+
+  <div class="container-fluid px-4">
+
+    <div class="row g-4 mb-4">
+
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="chart-title">Admission Status</div>
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="chart-title">Gender Distribution</div>
+          <canvas id="genderChart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="chart-title">Class-wise Admissions</div>
+          <canvas id="classChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="row g-4 mb-4">
+
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="chart-title">Top Father Occupations</div>
+          <canvas id="occupationChart"></canvas>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="chart-title">Mother Tongue Distribution</div>
+          <canvas id="languageChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- TABLE -->
+
+  <div class="container-fluid px-4">
+
+    <div class="table-card">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div class="chart-title mb-0">Admission Data Table</div>
+        <button class="btn btn-primary" onclick="downloadCSV()">
+          Download CSV
+        </button>
+      </div>
+
+      <div class="table-responsive">
+
+        <table id="admissionTable" class="table table-bordered table-hover w-100">
+
+          <thead class="table-primary">
+            <tr id="tableHead"></tr>
+          </thead>
+
+          <tbody id="tableBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+
+let originalData = [];
+let filteredData = [];
+
+let statusChart;
+let genderChart;
+let classChart;
+let occupationChart;
+let languageChart;
+
+// ---------------------------------------------------
+// FILE UPLOAD
+// ---------------------------------------------------
+
+document.getElementById('excelFile').addEventListener('change', handleFile, false);
+
+function handleFile(e) {
+
+  const file = e.target.files[0];
+
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+
+    const data = new Uint8Array(event.target.result);
+
+    const workbook = XLSX.read(data, { type: 'array' });
+
+    const firstSheet = workbook.SheetNames[0];
+
+    const worksheet = workbook.Sheets[firstSheet];
+
+    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+    originalData = jsonData;
+
+    initializeFilters();
+
+    applyFilters();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+// ---------------------------------------------------
+// FILTER INITIALIZATION
+// ---------------------------------------------------
+
+function initializeFilters() {
+
+  populateDropdown('statusFilter', 'STATUS');
+  populateDropdown('genderFilter', 'GENDER');
+  populateDropdown('classFilter', 'CLASS TO WHICH ADMISSION SOUGHT');
+}
+
+function populateDropdown(id, column) {
+
+  const dropdown = document.getElementById(id);
+
+  const values = [...new Set(originalData.map(item => item[column]).filter(Boolean))];
+
+  dropdown.innerHTML = '<option value="All">All</option>';
+
+  values.sort().forEach(value => {
+
+    dropdown.innerHTML += `<option value="${value}">${value}</option>`;
+  });
+}
+
+// ---------------------------------------------------
+// FILTER EVENTS
+// ---------------------------------------------------
+
+['statusFilter', 'genderFilter', 'classFilter'].forEach(id => {
+
+  document.getElementById(id).addEventListener('change', applyFilters);
+});
+
+// ---------------------------------------------------
+// APPLY FILTERS
+// ---------------------------------------------------
+
+function applyFilters() {
+
+  const status = document.getElementById('statusFilter').value;
+  const gender = document.getElementById('genderFilter').value;
+  const className = document.getElementById('classFilter').value;
+
+  filteredData = originalData.filter(item => {
+
+    return (
+      (status === 'All' || item['STATUS'] == status) &&
+      (gender === 'All' || item['GENDER'] == gender) &&
+      (className === 'All' || item['CLASS TO WHICH ADMISSION SOUGHT'] == className)
+    );
+  });
+
+  updateKPIs();
+  renderCharts();
+  renderTable();
+}
+
+// ---------------------------------------------------
+// KPI UPDATE
+// ---------------------------------------------------
+
+function updateKPIs() {
+
+  document.getElementById('totalAdmissions').innerText = filteredData.length;
+
+  const admitted = filteredData.filter(x =>
+    String(x['STATUS']).toUpperCase() === 'ADMITTED'
+  ).length;
+
+  const provisional = filteredData.filter(x =>
+    String(x['STATUS']).toUpperCase().includes('PROVISION')
+  ).length;
+
+  const notEligible = filteredData.filter(x =>
+    String(x['STATUS']).toUpperCase() === 'Not Eligible'
+  ).length;
+
+  const male = filteredData.filter(x =>
+    String(x['GENDER']).toUpperCase() === 'MALE'
+  ).length;
+
+  const female = filteredData.filter(x =>
+    String(x['GENDER']).toUpperCase() === 'FEMALE'
+  ).length;
+
+  document.getElementById('admittedCount').innerText = admitted;
+  document.getElementById('provisionalCount').innerText = provisional;
+  document.getElementById('notEligibleCount').innerText = notEligible;
+  document.getElementById('maleCount').innerText = male;
+  document.getElementById('femaleCount').innerText = female;
+}
+
+// ---------------------------------------------------
+// CHART HELPERS
+// ---------------------------------------------------
+
+function countBy(column) {
+
+  const counts = {};
+
+  filteredData.forEach(item => {
+
+    const value = item[column] || 'Unknown';
+
+    counts[value] = (counts[value] || 0) + 1;
+  });
+
+  return counts;
+}
+
+function destroyCharts() {
+
+  [statusChart, genderChart, classChart, occupationChart, languageChart]
+    .forEach(chart => {
+
+      if(chart) chart.destroy();
+    });
+}
+
+// ---------------------------------------------------
+// RENDER CHARTS
+// ---------------------------------------------------
+
+function renderCharts() {
+
+  destroyCharts();
+
+  // STATUS
+
+  const statusData = countBy('STATUS');
+
+  statusChart = new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusData),
+      datasets: [{
+        data: Object.values(statusData),
+        backgroundColor: [
+          '#1f77ff',
+          '#28c76f',
+          '#ff4d4f',
+          '#ff9f43',
+          '#6f42c1'
+        ]
+      }]
+    }
+  });
+
+  // GENDER
+
+  const genderData = countBy('GENDER');
+
+  genderChart = new Chart(document.getElementById('genderChart'), {
+    type: 'pie',
+    data: {
+      labels: Object.keys(genderData),
+      datasets: [{
+        data: Object.values(genderData),
+        backgroundColor: ['#0a1f6f', '#ff6384']
+      }]
+    }
+  });
+
+  // CLASS
+
+  const classData = countBy('CLASS TO WHICH ADMISSION SOUGHT');
+
+  classChart = new Chart(document.getElementById('classChart'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(classData),
+      datasets: [{
+        label: 'Admissions',
+        data: Object.values(classData),
+        backgroundColor: '#1f77ff'
+      }]
+    }
+  });
+
+  // OCCUPATION
+
+  const occupationData = countBy("FATHER'S OCCUPATION");
+
+  const topOcc = Object.entries(occupationData)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, 10);
+
+  occupationChart = new Chart(document.getElementById('occupationChart'), {
+    type: 'bar',
+    data: {
+      labels: topOcc.map(x => x[0]),
+      datasets: [{
+        label: 'Count',
+        data: topOcc.map(x => x[1]),
+        backgroundColor: '#28c76f'
+      }]
+    },
+    options: {
+      indexAxis: 'y'
+    }
+  });
+
+  // LANGUAGE
+
+  const languageData = countBy('MOTHER TONGUE');
+
+  const topLang = Object.entries(languageData)
+    .sort((a,b) => b[1] - a[1])
+    .slice(0, 10);
+
+  languageChart = new Chart(document.getElementById('languageChart'), {
+    type: 'bar',
+    data: {
+      labels: topLang.map(x => x[0]),
+      datasets: [{
+        label: 'Students',
+        data: topLang.map(x => x[1]),
+        backgroundColor: '#ff9f43'
+      }]
+    }
+  });
+}
+
+// ---------------------------------------------------
+// TABLE
+// ---------------------------------------------------
+
+function renderTable() {
+
+  if(filteredData.length === 0) return;
+
+  const columns = Object.keys(filteredData[0]);
+
+  // HEADERS
+
+  let headHTML = '';
+
+  columns.forEach(col => {
+    headHTML += `<th>${col}</th>`;
+  });
+
+  document.getElementById('tableHead').innerHTML = headHTML;
+
+  // BODY
+
+  let bodyHTML = '';
+
+  filteredData.forEach(row => {
+
+    bodyHTML += '<tr>';
+
+    columns.forEach(col => {
+
+      bodyHTML += `<td>${row[col] ?? ''}</td>`;
+    });
+
+    bodyHTML += '</tr>';
+  });
+
+  document.getElementById('tableBody').innerHTML = bodyHTML;
+
+  // DESTROY EXISTING DATATABLE
+
+  if ($.fn.DataTable.isDataTable('#admissionTable')) {
+    $('#admissionTable').DataTable().destroy();
+  }
+
+  // INIT DATATABLE
+
+  $('#admissionTable').DataTable({
+    pageLength: 10,
+    responsive: true
+  });
+}
+
+// ---------------------------------------------------
+// DOWNLOAD CSV
+// ---------------------------------------------------
+
+function downloadCSV() {
+
+  if(filteredData.length === 0) return;
+
+  const worksheet = XLSX.utils.json_to_sheet(filteredData);
+
+  const workbook = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Admissions');
+
+  XLSX.writeFile(workbook, 'filtered_admission_data.xlsx');
+}
+
+</script>
+
+</body>
+</html>
